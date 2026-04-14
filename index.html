@@ -51,7 +51,7 @@
     }
     #qr-container.show { display: block; }
     #qrcode { display: inline-block; padding: 10px; background: white; border-radius: 5px; }
-    #qrcode canvas { max-width: 100%; height: auto; }
+    #qrcode canvas, #qrcode img { max-width: 100%; width: 100% !important; height: auto !important; display: block; }
     .qr-info { font-size: 12px; color: #999; margin-top: 15px; }
     .message {
       margin-top: 20px;
@@ -191,10 +191,8 @@
     function displayQRCode(url) {
       const qrcodeEl = document.getElementById('qrcode');
       qrcodeEl.innerHTML = '';
-      const containerWidth = document.getElementById('qr-container').offsetWidth;
-      const size = Math.min(256, containerWidth - 60);
       new QRCode(qrcodeEl, {
-        text: url, width: size, height: size,
+        text: url, width: 256, height: 256,
         colorDark: '#000000', colorLight: '#ffffff'
       });
     }
