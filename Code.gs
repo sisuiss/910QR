@@ -4,11 +4,12 @@
   const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Logs');
   const STAFF_PASSWORD = '910'; // スタッフパスワード
   // ★ parent.html をホスティングしたURLに変更してください ★
-  const PARENT_URL = 'https://sisuiss.github.io/QRtest/parent.html';
+  const PARENT_URL = 'https://sisuiss.github.io/910QR/parent.html';
 
   // ===== ウェブアプリのエントリーポイント =====
   function doGet(e) {
-    const token = e.parameter.token;
+    const params = (e && e.parameter) || {};
+    const token = params.token;
 
     // スタッフがQRをスキャン（?token=xxxx）
     if (token) {
