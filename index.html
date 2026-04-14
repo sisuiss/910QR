@@ -95,6 +95,9 @@
 
     const BID = generateBrowserId();
 
+    // ページ読み込み時にバックグラウンドで照合開始
+    const statusPromise = gasGet({ action: 'status', bid: BID }).catch(() => ({ status: 'none' }));
+
     async function gasGet(params) {
       const url = GAS_URL + '?' + new URLSearchParams(params).toString();
       const res = await fetch(url);
@@ -106,8 +109,8 @@
       document.getElementById('issueBtn').disabled = true;
       document.getElementById('status-msg').classList.remove('show');
       try {
-        // まず現在の状態を確認
-        const statusResult = await gasGet({ action: 'status', bid: BID });
+        // バックグラウンドで照合済みの結果を使用
+        const statusResult = await statusPromise;
         if (statusResult.status === '使用済み') {
           displayUsedCoupon();
           return;
