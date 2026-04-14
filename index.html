@@ -189,9 +189,12 @@
     }
 
     function displayQRCode(url) {
-      document.getElementById('qrcode').innerHTML = '';
-      new QRCode(document.getElementById('qrcode'), {
-        text: url, width: 200, height: 200,
+      const qrcodeEl = document.getElementById('qrcode');
+      qrcodeEl.innerHTML = '';
+      const containerWidth = document.getElementById('qr-container').offsetWidth;
+      const size = Math.min(256, containerWidth - 60);
+      new QRCode(qrcodeEl, {
+        text: url, width: size, height: size,
         colorDark: '#000000', colorLight: '#ffffff'
       });
     }
