@@ -101,43 +101,28 @@
       return res.json();
     }
 
-    // ページ読み込み時
-    document.addEventListener('DOMContentLoaded', async () => {
-      const cachedToken = localStorage.getItem(`coupon_token_${BID}`);
-
-      if (cachedToken) {
-        displayUnusedCoupon(cachedToken);
-        const result = await gasGet({ action: 'status', bid: BID }).catch(() => null);
-        if (result && result.status === '使用済み') displayUsedCoupon();
-      } else {
-        try {
-          const result = await gasGet({ action: 'status', bid: BID });
-          initializeScreen(result);
-        } catch (e) {
-          // エラー時はボタン待機
-        }
-      }
-    });
-
-    function initializeScreen(result) {
-      if (result.status === '使用済み') {
-        displayUsedCoupon();
-      } else if (result.status === '未使用') {
-        displayUnusedCoupon(result.token, result.url);
-      }
-      // status === 'none' の場合はボタン待機
-    }
-
+    // ボタン押下時の処理
     async function generateCoupon() {
       document.getElementById('issueBtn').disabled = true;
       document.getElementById('status-msg').classList.remove('show');
       try {
+        // まず現在の状態を確認
+        const statusResult = await gasGet({ action: 'status', bid: BID });
+        if (statusResult.status === '使用済み') {
+          displayUsedCoupon();
+          return;
+        } else if (statusResult.status === '未使用') {
+          displayUnusedCoupon(statusResult.token, statusResult.url);
+          return;
+        }
+        // 新規発行
         const result = await gasGet({ action: 'issue', bid: BID });
         if (result.status === 'success') {
           localStorage.setItem(`coupon_token_${BID}`, result.token);
           displayUnusedCoupon(result.token, result.url);
         } else {
           showMessage('error', result.message);
+          document.getElementById('issueBtn').disabled = false;
         }
       } catch (e) {
         showMessage('error', 'エラーが発生しました。再読み込みしてください。');
