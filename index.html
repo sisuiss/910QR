@@ -95,8 +95,9 @@
 
     const BID = generateBrowserId();
 
-    // ページ読み込み時にバックグラウンドで照合開始
+    // ページ読み込み時にステータス確認と発行を並列でバックグラウンド開始
     const statusPromise = gasGet({ action: 'status', bid: BID }).catch(() => ({ status: 'none' }));
+    const issuePromise = gasGet({ action: 'issue', bid: BID }).catch(() => null);
 
     async function gasGet(params) {
       const url = GAS_URL + '?' + new URLSearchParams(params).toString();
@@ -109,7 +110,6 @@
       document.getElementById('issueBtn').disabled = true;
       document.getElementById('status-msg').classList.remove('show');
       try {
-        // バックグラウンドで照合済みの結果を使用
         const statusResult = await statusPromise;
         if (statusResult.status === '使用済み') {
           displayUsedCoupon();
@@ -118,14 +118,20 @@
           displayUnusedCoupon(statusResult.token, statusResult.url);
           return;
         }
-        // 新規発行
-        const result = await gasGet({ action: 'issue', bid: BID });
-        if (result.status === 'success') {
+        // 新規発行（バックグラウンドで既に実行済み）
+        const result = await issuePromise;
+        if (result && result.status === 'success') {
           localStorage.setItem(`coupon_token_${BID}`, result.token);
           displayUnusedCoupon(result.token, result.url);
         } else {
-          showMessage('error', result.message);
-          document.getElementById('issueBtn').disabled = false;
+          // 発行失敗時は最新ステータスを再確認
+          const retry = await gasGet({ action: 'status', bid: BID });
+          if (retry.status === '未使用') {
+            displayUnusedCoupon(retry.token, retry.url);
+          } else {
+            showMessage('error', result?.message || 'エラーが発生しました。');
+            document.getElementById('issueBtn').disabled = false;
+          }
         }
       } catch (e) {
         showMessage('error', 'エラーが発生しました。再読み込みしてください。');
