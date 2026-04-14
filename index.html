@@ -3,15 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>店舗限定クーポン - ワンタイムQR</title>
+  <title>店舗限定クーポン</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -21,30 +16,16 @@
       align-items: center;
       padding: 20px;
     }
-
     .container {
       background: white;
       border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       padding: 40px;
       max-width: 400px;
       width: 100%;
     }
-
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 10px;
-      font-size: 28px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #999;
-      font-size: 14px;
-      margin-bottom: 30px;
-    }
-
+    h1 { text-align: center; color: #333; margin-bottom: 10px; font-size: 28px; }
+    .subtitle { text-align: center; color: #999; font-size: 14px; margin-bottom: 30px; }
     .btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -57,22 +38,8 @@
       width: 100%;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .btn:disabled {
-      background: #ddd;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+    .btn:disabled { background: #ddd; cursor: not-allowed; opacity: 0.6; }
     #qr-container {
       text-align: center;
       background: #f9f9f9;
@@ -82,33 +49,10 @@
       margin-top: 20px;
       display: none;
     }
-
-    #qr-container.show {
-      display: block;
-    }
-
-    #qrcode {
-      display: inline-block;
-      padding: 10px;
-      background: white;
-      border-radius: 5px;
-    }
-
-    #qrcode canvas {
-      max-width: 100%;
-      height: auto;
-    }
-
-    .qr-info {
-      font-size: 12px;
-      color: #999;
-      margin-top: 15px;
-    }
-
-    .qr-info p {
-      margin: 5px 0;
-    }
-
+    #qr-container.show { display: block; }
+    #qrcode { display: inline-block; padding: 10px; background: white; border-radius: 5px; }
+    #qrcode canvas { max-width: 100%; height: auto; }
+    .qr-info { font-size: 12px; color: #999; margin-top: 15px; }
     .message {
       margin-top: 20px;
       padding: 15px;
@@ -117,80 +61,33 @@
       font-weight: bold;
       display: none;
     }
-
-    .message.show {
-      display: block;
-    }
-
-    .message.error {
-      background: #ffebee;
-      color: #c62828;
-      border: 1px solid #ef5350;
-    }
-
-    .message.success {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #66bb6a;
-    }
-
-    .browser-id {
-      background: #f5f5f5;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 20px;
-      font-size: 12px;
-      color: #666;
-      word-break: break-all;
-      font-family: monospace;
-      display: none;
-    }
-
-    .info-box {
-      background: #fff3e0;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 15px;
-      font-size: 12px;
-      color: #e65100;
-      display: none;
-    }
+    .message.show { display: block; }
+    .message.error { background: #ffebee; color: #c62828; border: 1px solid #ef5350; }
+    .message.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #66bb6a; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🎟️ サンプルクーポン</h1>
     <p class="subtitle">お一人様1回限り</p>
-
     <button id="issueBtn" class="btn" onclick="generateCoupon()">クーポンを発行する</button>
-    
     <div id="qr-container">
       <div id="qrcode"></div>
-      <div class="qr-info">
-        <p>スタッフに提示してください</p>
-      </div>
+      <div class="qr-info"><p>スタッフに提示してください</p></div>
     </div>
-
     <div id="status-msg" class="message"></div>
-
-    <div class="browser-id">
-      <strong>ブラウザID:</strong><br>
-      <span id="bid-display"></span>
-    </div>
-
-    <div class="info-box">
-      💡 スタッフが別の端末でQRをスキャンすると、認証画面が表示されます。
-    </div>
   </div>
 
   <script>
+    // ★ GAS WebアプリURLをここに貼り付けてください ★
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxunsirwakmoFVV_jFLRw5mbuYhxW73QnSVRhCn2F4S118DIm7LQHCTasunc80nELG3/exec';
+
     // ブラウザID生成
     function generateBrowserId() {
-      const navigator_data = `${navigator.userAgent}-${navigator.language}-${new Date().getTimezoneOffset()}`;
+      const nav = `${navigator.userAgent}-${navigator.language}-${new Date().getTimezoneOffset()}`;
       let hash = 0;
-      for (let i = 0; i < navigator_data.length; i++) {
-        const char = navigator_data.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+      for (let i = 0; i < nav.length; i++) {
+        hash = ((hash << 5) - hash) + nav.charCodeAt(i);
         hash = hash & hash;
       }
       return `bid_${Math.abs(hash).toString(36).substring(0, 16)}`;
@@ -198,157 +95,102 @@
 
     const BID = generateBrowserId();
 
+    async function gasGet(params) {
+      const url = GAS_URL + '?' + new URLSearchParams(params).toString();
+      const res = await fetch(url);
+      return res.json();
+    }
+
     // ページ読み込み時
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('bid-display').innerText = BID;
-      
-      // ローカルストレージから前回のトークンを確認
+    document.addEventListener('DOMContentLoaded', async () => {
       const cachedToken = localStorage.getItem(`coupon_token_${BID}`);
-      
+
       if (cachedToken) {
-        // キャッシュがあれば先に表示してから状態確認
         displayUnusedCoupon(cachedToken);
-        
-        // バックグラウンドで現在の状態確認
-        google.script.run
-          .withSuccessHandler(initializeScreenFromCache)
-          .getUserCouponStatus(BID);
+        const result = await gasGet({ action: 'status', bid: BID }).catch(() => null);
+        if (result && result.status === '使用済み') displayUsedCoupon();
       } else {
-        // キャッシュがなければ通常フロー
-        google.script.run
-          .withSuccessHandler(initializeScreen)
-          .withFailureHandler(() => {
-            initializeScreen({ status: 'none' });
-          })
-          .getUserCouponStatus(BID);
+        try {
+          const result = await gasGet({ action: 'status', bid: BID });
+          initializeScreen(result);
+        } catch (e) {
+          generateCoupon();
+        }
       }
     });
 
-    // ===== 状態に応じて画面を初期化 =====
-    function initializeScreen(couponStatus) {
-      if (couponStatus.status === '使用済み') {
-        // パターン1：使用済み画面を表示
+    function initializeScreen(result) {
+      if (result.status === '使用済み') {
         displayUsedCoupon();
-      } else if (couponStatus.status === '未使用') {
-        // パターン2：QR表示画面を表示
-        displayUnusedCoupon(couponStatus.token, couponStatus.url);
+      } else if (result.status === '未使用') {
+        displayUnusedCoupon(result.token, result.url);
       } else {
-        // クーポンなし：発行
         generateCoupon();
       }
     }
 
-    // キャッシュからの初期化（状態変更のみ反映）
-    function initializeScreenFromCache(couponStatus) {
-      if (couponStatus.status === '使用済み') {
-        displayUsedCoupon();
+    async function generateCoupon() {
+      document.getElementById('issueBtn').disabled = true;
+      document.getElementById('status-msg').classList.remove('show');
+      try {
+        const result = await gasGet({ action: 'issue', bid: BID });
+        if (result.status === 'success') {
+          localStorage.setItem(`coupon_token_${BID}`, result.token);
+          displayUnusedCoupon(result.token, result.url);
+        } else {
+          showMessage('error', result.message);
+        }
+      } catch (e) {
+        showMessage('error', 'エラーが発生しました。再読み込みしてください。');
+        document.getElementById('issueBtn').disabled = false;
       }
-      // 未使用またはnoneの場合は、既に表示されているのでスキップ
     }
 
-    // ===== 使用済み状態 =====
     function displayUsedCoupon() {
+      stopPolling();
       document.getElementById('issueBtn').style.display = 'none';
       document.getElementById('qr-container').innerHTML = `
-        <div style="padding: 30px; text-align: center;">
-          <h2 style="color: #4CAF50; font-size: 32px; margin-bottom: 10px;">✅ 使用済み</h2>
-          <p style="color: #666; margin-bottom: 20px;">クーポンが適用されました</p>
-        </div>
-      `;
+        <div style="padding:30px;text-align:center;">
+          <h2 style="color:#4CAF50;font-size:32px;margin-bottom:10px;">✅ 使用済み</h2>
+          <p style="color:#666;">クーポンが適用されました</p>
+        </div>`;
       document.getElementById('qr-container').classList.add('show');
     }
 
-    // ===== 未使用状態 =====
     function displayUnusedCoupon(token, url) {
-      // URLが無い場合は再構築
       if (!url) {
-        const webAppUrl = window.location.href.split('?')[0];
-        url = webAppUrl + '?token=' + encodeURIComponent(token);
+        url = `https://sisuiss.github.io/910QR/staff.html?token=${encodeURIComponent(token)}`;
       }
-      
       displayQRCode(url);
       document.getElementById('issueBtn').style.display = 'none';
       document.getElementById('qr-container').classList.add('show');
-      
-      // ポーリング開始
       window.currentToken = token;
       startPolling();
     }
 
-    // ===== クーポン発行処理 =====
-    function generateCoupon() {
-      document.getElementById('status-msg').classList.remove('show');
-      
-      google.script.run
-        .withSuccessHandler(handleIssueSuccess)
-        .withFailureHandler(handleIssueError)
-        .issueToken(BID);
-    }
-
-    function handleIssueSuccess(result) {
-      if (result.status === 'success') {
-        // トークンをローカルストレージに保存
-        localStorage.setItem(`coupon_token_${BID}`, result.token);
-        
-        // QRコード表示（URLを含める）
-        displayQRCode(result.url);
-        document.getElementById('issueBtn').style.display = 'none';
-        document.getElementById('qr-container').classList.add('show');
-        
-        // トークンを保存してポーリング開始
-        window.currentToken = result.token;
-        startPolling();
-      } else {
-        showMessage('error', result.message);
-        document.getElementById('issueBtn').disabled = true;
-      }
-    }
-
-    function handleIssueError(error) {
-      showMessage('error', 'エラー: ' + error);
-    }
-
-    // ===== ポーリング機能：使用済みをリアルタイム確認 =====
+    // ポーリング
     let pollingInterval = null;
-
     function startPolling() {
-      // 500msごとにステータスをチェック（高速応答）
-      pollingInterval = setInterval(() => {
-        if (window.currentToken) {
-          google.script.run
-            .withSuccessHandler(checkTokenStatus)
-            .checkTokenStatus(window.currentToken);
-        }
-      }, 500);
+      pollingInterval = setInterval(async () => {
+        if (!window.currentToken) return;
+        try {
+          const status = await gasGet({ action: 'check', token: window.currentToken });
+          if (status === '使用済み') displayUsedCoupon();
+        } catch (e) {}
+      }, 3000);
     }
-
-    function checkTokenStatus(status) {
-      if (status === '使用済み') {
-        // 使用済みになった！
-        stopPolling();
-        displayUsedCoupon();
-      }
-    }
-
     function stopPolling() {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-        pollingInterval = null;
-      }
+      if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
     }
 
     function displayQRCode(url) {
       document.getElementById('qrcode').innerHTML = '';
       new QRCode(document.getElementById('qrcode'), {
-        text: url,
-        width: 200,
-        height: 200,
-        colorDark: '#000000',
-        colorLight: '#ffffff'
+        text: url, width: 200, height: 200,
+        colorDark: '#000000', colorLight: '#ffffff'
       });
     }
 
-    // ===== メッセージ表示 =====
     function showMessage(type, text) {
       const msg = document.getElementById('status-msg');
       msg.className = `message show ${type}`;
