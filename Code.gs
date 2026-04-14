@@ -3,6 +3,7 @@
 const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Logs');
 const STAFF_PASSWORD = '910';
 const STAFF_URL = 'https://sisuiss.github.io/910QR/staff.html';
+const CACHE = CacheService.getScriptCache();
 
 // ===== エントリーポイント =====
 function doGet(e) {
@@ -60,6 +61,9 @@ function issueToken(bid) {
 
     const qrUrl = STAFF_URL + '?token=' + encodeURIComponent(token);
 
+    // トークンキャッシュを設定
+    CACHE.put('token_' + token, '未使用', 3600);
+
     return {
       status: 'success',
       token: token,
@@ -98,6 +102,10 @@ function handleStaffAuth(token, password) {
         }
         SHEET.getRange(i + 1, 4).setValue('使用済み');
         SHEET.getRange(i + 1, 5).setValue(new Date());
+
+        // キャッシュをすぐに更新
+        CACHE.put('token_' + token, '使用済み', 3600);
+
         return { status: 'success', message: '承認成功！クーポンを適用してください' };
       }
     }
@@ -111,11 +119,19 @@ function handleStaffAuth(token, password) {
 
 // ===== トークン状態確認（ポーリング用） =====
 function checkTokenStatus(token) {
+  // キャッシュから取得（使用済みは確定なので長期キャッシュ）
+  const cached = CACHE.get('token_' + token);
+  if (cached) return cached;
+
   try {
     const data = SHEET.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       if (data[i][2] === token) {
-        return data[i][3];
+        const status = data[i][3];
+        if (status === '使用済み') {
+          CACHE.put('token_' + token, '使用済み', 3600);
+        }
+        return status;
       }
     }
     return '無効';
@@ -127,6 +143,12 @@ function checkTokenStatus(token) {
 
 // ===== ユーザーのクーポン状態確認 =====
 function getUserCouponStatus(bid) {
+  // キャッシュから取得（30秒間有効）
+  const cached = CACHE.get('status_' + bid);
+  if (cached) {
+    try { return JSON.parse(cached); } catch(e) {}
+  }
+
   try {
     const data = SHEET.getDataRange().getValues();
     let latestRow = null;
@@ -150,12 +172,16 @@ function getUserCouponStatus(bid) {
     }
 
     const qrUrl = STAFF_URL + '?token=' + encodeURIComponent(latestRow.token);
-
-    return {
+    const result = {
       status: latestRow.status,
       token: latestRow.token,
       url: qrUrl
     };
+
+    // 30秒キャッシュ
+    CACHE.put('status_' + bid, JSON.stringify(result), 30);
+
+    return result;
   } catch (error) {
     Logger.log('Error in getUserCouponStatus: ' + error);
     return { status: 'error', message: 'エラーが発生しました' };
