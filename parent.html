@@ -23,9 +23,14 @@
       // ★ ここに自分のGAS WebアプリURLを貼り付けてください ★
       const gasAppUrl = 'https://script.google.com/macros/s/AKfycbxb-u4t3QfN01kQggFmOkuhHR0zDZ23xFvF_SPzYftB7RGAm6jH3Sy3UIpkiPOCWaxo/exec';
 
-      const iframe = document.getElementById('gasiframe');
-      // URLパラメータ（?token=xxxx など）をGAS側にそのまま渡す
-      iframe.src = gasAppUrl + window.location.search;
+      if (window.location.search.includes('token=')) {
+        // スタッフ認証：GASに直接リダイレクト
+        window.location.href = gasAppUrl + window.location.search;
+      } else {
+        // クーポンページ：iframe経由（バナー非表示）
+        const iframe = document.getElementById('gasiframe');
+        iframe.src = gasAppUrl;
+      }
     };
   </script>
   <body>

@@ -4,7 +4,7 @@
   const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Logs');
   const STAFF_PASSWORD = '910'; // スタッフパスワード
   // ★ parent.html をホスティングしたURLに変更してください ★
-  const PARENT_URL = 'https://YOUR_DOMAIN/parent.html';
+  const PARENT_URL = 'https://sisuiss.github.io/QRtest/parent.html';
 
   // ===== ウェブアプリのエントリーポイント =====
   function doGet(e) {
