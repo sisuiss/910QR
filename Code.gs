@@ -24,6 +24,9 @@ function doGet(e) {
     case 'auth':
       result = handleStaffAuth(params.token, params.password);
       break;
+    case 'reset':
+      result = resetCache(params.bid);
+      break;
     default:
       result = { status: 'error', message: 'Unknown action' };
   }
@@ -31,6 +34,16 @@ function doGet(e) {
   return ContentService
     .createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ===== キャッシュリセット =====
+function resetCache(bid) {
+  try {
+    CACHE.remove('status_' + bid);
+    return { status: 'ok' };
+  } catch (error) {
+    return { status: 'error' };
+  }
 }
 
 // ===== トークン発行 =====

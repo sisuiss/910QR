@@ -95,7 +95,8 @@
 
     const BID = generateBrowserId();
 
-    // ページ読み込み時にステータス確認と発行を並列でバックグラウンド開始
+    // ページ読み込み時：キャッシュリセット後にステータス確認と発行を並列開始
+    gasGet({ action: 'reset', bid: BID }).catch(() => {});
     const statusPromise = gasGet({ action: 'status', bid: BID }).catch(() => ({ status: 'none' }));
     const issuePromise = gasGet({ action: 'issue', bid: BID }).catch(() => null);
 
