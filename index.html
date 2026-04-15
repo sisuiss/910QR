@@ -102,12 +102,9 @@
       return res.json();
     }
 
-    // ページ読み込み時：resetを待ってからstatus・issueを並列開始
-    (async () => {
-      await gasGet({ action: 'reset', bid: BID }).catch(() => {});
-      statusPromise = gasGet({ action: 'status', bid: BID }).catch(() => ({ status: 'none' }));
-      issuePromise = gasGet({ action: 'issue', bid: BID }).catch(() => null);
-    })();
+    // ページ読み込み時：status・issueをバックグラウンドで開始
+    statusPromise = gasGet({ action: 'status', bid: BID }).catch(() => ({ status: 'none' }));
+    issuePromise = gasGet({ action: 'issue', bid: BID }).catch(() => null);
 
     // ボタン押下時の処理
     async function generateCoupon() {
