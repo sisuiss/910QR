@@ -34,7 +34,7 @@ function doGet(e) {
 
 // ===== トークン発行 =====
 function issueToken(bid) {
-  if (!bid) return { status: 'error', message: 'bid is required' };
+  if (!bid || !String(bid).startsWith('bid_')) return { status: 'error', message: 'invalid bid' };
   try {
     const data = SHEET.getDataRange().getValues();
 
